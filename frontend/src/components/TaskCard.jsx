@@ -3,7 +3,7 @@
 function TaskCard() {
     return (
         <>
-            <h1>HIjfei hruiwegfejifo</h1>
+            <h1>Task Card</h1>
         </>
     )
 }

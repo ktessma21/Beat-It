@@ -18,7 +18,7 @@ function NavBar() {
             <div className="ml-10 flex items-baseline space-x-4">
               <a
                 href="#"
-                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium jersey-10-regular"
+                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium font-jersey-10-regular"
               >
                 Habits
               </a>
