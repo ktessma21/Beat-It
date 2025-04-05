@@ -7,40 +7,26 @@ function NavBar() {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-[#CA693A] text-[64px] font-normal leading-none font-['Jersey_10']">Beat-It!</h1>
+                <img
+                  className=""
+                  src="/pictures/logo.png"
+                  alt="Logo"
+                />
             </div>
 
             {/* Navigation Links */}
             <div className="ml-10 flex items-baseline space-x-4">
               <a
                 href="#"
-                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium jersey-10-regular"
               >
-                Dashboard
+                Habits
               </a>
               <a
                 href="#"
                 className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               >
-                Team
-              </a>
-              <a
-                href="#"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Projects
-              </a>
-              <a
-                href="#"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Calendar
-              </a>
-              <a
-                href="#"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Reports
+                Tasks
               </a>
             </div>
           </div>
