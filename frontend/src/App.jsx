@@ -1,14 +1,14 @@
-import './index.css'
-import TaskCard from './components/taskCard'
-import NavBar from './components/navBar'
+import './App.css'
+import TaskCard from './components/TaskCard'
+import NavBar from './components/NavBar'
 
 function App() {
   return (
-    <>
+    <div className="font-jersey">
       <NavBar />
       <TaskCard />
-      
-    </>
+      hello
+    </div>
   )
 }
 

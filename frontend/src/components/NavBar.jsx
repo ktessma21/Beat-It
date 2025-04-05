@@ -18,13 +18,13 @@ function NavBar() {
             <div className="ml-10 flex items-baseline space-x-4">
               <a
                 href="#"
-                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium font-jersey-10-regular"
+                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-jersey"
               >
                 Habits
               </a>
               <a
                 href="#"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-jersey"
               >
                 Tasks
               </a>
