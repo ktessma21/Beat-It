@@ -5,9 +5,7 @@ import NavBar from './components/navBar'
 function App() {
   return (
     <>
-      <div className="top-2">
-        <NavBar />
-      </div>
+      <NavBar />
       <TaskCard />
       
     </>
