@@ -10,7 +10,7 @@ function App() {
         <TaskCard />
       </div>
       
-    </>
+    </div>
   )
 }
 

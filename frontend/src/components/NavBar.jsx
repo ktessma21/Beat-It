@@ -1,7 +1,7 @@
 
 function NavBar() {
   return (
-    <nav className="w-full bg-gray-800">
+    <nav className="w-full nav">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -18,13 +18,13 @@ function NavBar() {
             <div className="ml-10 flex items-baseline space-x-4">
               <a
                 href="#"
-                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-jersey"
+                className="hover:bg-gray-700 text-white px-3 py-2 rounded-md"
               >
                 Habits
               </a>
               <a
                 href="#"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-jersey"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md"
               >
                 Tasks
               </a>
