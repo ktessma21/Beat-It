@@ -1,11 +1,12 @@
-
-
 function TaskCard() {
     return (
-        <>
-            <h1>HIjfei hruiwegfejifo</h1>
-        </>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="border-2 border-gray-600 w-96 h-64">
+          
+        </div>
+      </div>
     )
-}
-
-export default TaskCard
+  }
+  
+  export default TaskCard
+  
