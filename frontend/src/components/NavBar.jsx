@@ -8,7 +8,7 @@ function NavBar() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
                 <img
-                  className=""
+                  className="w-40"
                   src="/pictures/logo.png"
                   alt="Logo"
                 />
