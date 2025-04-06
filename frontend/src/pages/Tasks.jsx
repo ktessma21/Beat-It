@@ -1,15 +1,29 @@
 import {React, useContext} from "react";
 import {PageContext} from '../helpers/Contexts'
-import TaskCard from '../components/TaskCard'
-import NavBar from "../components/NavBar";
+import TaskCard from '../components/taskCard'
+import NavBar from "../components/navBar";
 
 function Tasks(){
     const {pageState, setPageState} = useContext(PageContext);
     return(
-        <div>
+        <div className="h-screen w-screen flex flex-col">
             <NavBar />
-            <h1>Tasks</h1>
-            <TaskCard />
+            <div className="text-5xl px-8 pt-8">Task Hub</div>
+            <div className="text-3xl px-8">Complete your tasks to train your students!</div>
+            <div className="p-8 w-full">
+                <div className="overflow-x-auto">
+                    <div className="flex gap-8 pb-8">
+                        <TaskCard />
+                        <TaskCard />
+                        <TaskCard />
+                        <TaskCard />
+                        <TaskCard />
+                        <TaskCard />
+                        <TaskCard />
+                        <TaskCard />
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
