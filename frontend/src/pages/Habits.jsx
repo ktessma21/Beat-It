@@ -1,6 +1,6 @@
 import {React, useContext} from "react";
 import {PageContext} from '../helpers/Contexts'
-import TaskCard from '../components/TaskCard'
+import TaskCard from '../components/taskCard'
 import NavBar from "../components/NavBar";
 import AddPopUp from "../components/AddPopUp";
 import AddTaskCard from "../components/AddTaskCard";

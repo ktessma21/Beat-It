@@ -12,13 +12,11 @@ function AddTaskCard() {
                 <div className="w-full h-28 absolute bottom-0 bg-[#b96244] z-0"></div>
                 <div className="absolute top-0 flex justify-between w-full py-3 px-6 text-[#894625] text-4xl">
                     <p>Example Task</p>
-                    <p className={`${isRunning && time <= 60 ? 'animate-pulse' : ''}`}>{formatTime()}</p>
                 </div>
 
                 {/* Buttons */}
                 <div className="flex absolute bottom-2 right-6 gap-2">
                     <button 
-                        onClick={handleReset}
                         className="bg-white py-1 px-3 text-3xl rounded-2xl border-2 text-[#894625] hover:text-[#dbbcaa]"
                     >
                         +
