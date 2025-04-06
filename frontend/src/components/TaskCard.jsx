@@ -161,7 +161,7 @@ function TaskCard({ task }) {
             }
     
             // Start playback
-            loadMidiFile({ level: 'novice', taskId });
+            loadMidiFile({ level: {level}, taskId });
     
             setIsRunning(true);
             setIsPaused(false); // Make sure isPaused is false when starting
@@ -197,7 +197,7 @@ function TaskCard({ task }) {
                 <div className="absolute top-0 flex justify-between w-full py-3 px-6 text-[#894625] text-4xl">
                     <div>
                         <p className="truncate max-w-48">{taskName}</p>
-                        <p className="text-sm mt-1 text-white">{level}</p>
+                        <p className="text-[24px] mt-1 text-white">{level}</p>
                     </div>
                     <p className={`${isRunning && time <= 60 ? 'animate-pulse' : ''}`}>{formatTime()}</p>
                 </div>
