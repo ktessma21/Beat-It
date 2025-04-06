@@ -35,3 +35,4 @@ export async function loginUser(username, password, registrationtype) {
     }
 }
 
+export default loginUser; // Export the function for use in other files
