@@ -39,7 +39,7 @@ function Tasks() {
     return (
         <div className="h-screen w-screen flex flex-col">
             <NavBar />
-            <AddPopUp />
+            {/* <AddPopUp />  */}
             <div className="text-5xl px-8 pt-8">Task Hub</div>
             <div className="text-3xl px-8">Practice healthy tasks to train your students!</div>
             <div className="p-8 w-full">
