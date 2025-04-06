@@ -10,7 +10,7 @@ function Tasks(){
         <div className="h-screen w-screen flex flex-col">
             <NavBar />
             <AddPopUp />
-            <div className="text-5xl px-8 pt-8">Task Hub</div>
+            <div className="text-5xl px-8 pt-8">Task HubHELLO</div>
             <div className="text-3xl px-8">Complete your tasks to train your students!</div>
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
