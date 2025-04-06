@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
 
 
@@ -8,6 +8,7 @@ function TaskCard({ task }) {
     const taskId = task?.id || "123";
     const taskName = task?.task_name || "Example Task";
     const goalTime = task?.goal_time || 60; // in minutes
+    const [isPaused, setIsPaused] = useState(false);
     
     // Create a unique storage key that includes both task ID and name
     const storageKey = useMemo(() => {
@@ -153,7 +154,7 @@ function TaskCard({ task }) {
     // Handle Start/Stop button click
     function handleClick() {
 
-        if (!isRunning) {
+        if (!isRunning && !isPaused) {
 
             if (time === 0) {
                 setTime(initialTime);
