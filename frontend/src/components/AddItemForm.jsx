@@ -1,9 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { PageContext } from '../helpers/Contexts';
+import { fetchHabits } from '../pages/Habits';
+
 
 function AddItemForm() {
     const { pageState, setPageState, popUpState, setPopUpState } = useContext(PageContext);
-    
+
     const [formData, setFormData] = useState({
         name: '',
         goalTime: '',
@@ -14,15 +16,11 @@ function AddItemForm() {
     const [success, setSuccess] = useState('');
 
     const isHabit = pageState === "habits";
-    
-    // Reset form when popup state changes
+
+    // Reset form state when popup opens
     useEffect(() => {
-        if (!popUpState) {
-            setFormData({
-                name: '',
-                goalTime: '',
-                frequency: ''
-            });
+        if (popUpState) {
+            setFormData({ name: '', goalTime: '', frequency: '' });
             setError('');
             setSuccess('');
         }
@@ -40,18 +38,18 @@ function AddItemForm() {
         e.preventDefault();
         setLoading(true);
         setError('');
-        
+        setSuccess('');
+
         try {
             const token = localStorage.getItem("authToken");
-            
+
             if (!token) {
                 setError("Authentication token not found. Please log in again.");
                 setLoading(false);
                 return;
             }
 
-            // Prepare data based on item type (habit or task)
-            const requestData = isHabit 
+            const requestData = isHabit
                 ? {
                     habit_name: formData.name,
                     goal_time: parseInt(formData.goalTime),
@@ -64,7 +62,7 @@ function AddItemForm() {
                 };
 
             const endpoint = isHabit ? '/habits' : '/tasks';
-            
+
             const response = await fetch(`https://beatitbackend.onrender.com${endpoint}`, {
                 method: 'POST',
                 headers: {
@@ -75,19 +73,20 @@ function AddItemForm() {
             });
 
             const data = await response.json();
-            
+
             if (!response.ok) {
                 throw new Error(data.message || `Failed to add ${isHabit ? 'habit' : 'task'}`);
             }
-            
+
             setSuccess(data.message || `${isHabit ? 'Habit' : 'Task'} added successfully`);
-            
-            // Reset form and close popup after a brief delay
+
+            // Delay popup close and reload for feedback
             setTimeout(() => {
                 setPopUpState(false);
-                // Optionally refresh the list here
-            }, 1500);
-            
+                // Reload the window for both tasks and habits
+                window.location.reload();
+            }, 1000);
+
         } catch (error) {
             setError(error.message || `An error occurred while adding the ${isHabit ? 'habit' : 'task'}`);
         } finally {
@@ -102,7 +101,7 @@ function AddItemForm() {
             <div className="bg-[#C6CDFDDE] border-3 border-gray-600 rounded-2xl p-6 w-96">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Add New {isHabit ? 'Habit' : 'Task'}</h2>
-                    <button 
+                    <button
                         onClick={() => setPopUpState(false)}
                         className="text-black hover:text-gray-700"
                     >

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { PageContext } from '../helpers/Contexts';
-import TaskCard from '../components/taskCard';
+import TaskCard from '../components/TaskCard';
 import NavBar from "../components/NavBar";
 import AddPopUp from "../components/AddPopUp";
 import AddTaskCard from "../components/AddTaskCard";
@@ -8,11 +8,22 @@ import AddTaskCard from "../components/AddTaskCard";
 function Tasks() {
     const { pageState, setPageState } = useContext(PageContext);
     const [tasks, setTasks] = useState([]);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+    // Set page state on component mount
+    useEffect(() => {
+        setPageState("tasks");
+    }, []);
+
+    // Fetch tasks when component mounts or refreshTrigger changes
     useEffect(() => {
         const fetchTasks = async () => {
             try {
                 const token = localStorage.getItem("authToken");
+                if (!token) {
+                    console.error("No authentication token found");
+                    return;
+                }
 
                 const res = await fetch("https://beatitbackend.onrender.com/tasks", {
                     method: "GET",
@@ -27,14 +38,21 @@ function Tasks() {
                 }
 
                 const data = await res.json();
-                setTasks(data.tasks); // Adjust this based on your backend response structure
+                if (data.tasks) {
+                    setTasks(data.tasks);
+                }
             } catch (error) {
                 console.error("Error fetching tasks:", error);
             }
         };
 
         fetchTasks();
-    }, []);
+    }, [refreshTrigger]);
+
+    // Function to trigger task list refresh
+    const refreshTasks = () => {
+        setRefreshTrigger(prev => prev + 1);
+    };
 
     return (
         <div className="h-screen w-screen flex flex-col">
@@ -46,11 +64,7 @@ function Tasks() {
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
                     <div className="flex gap-8 pb-8">
-                    {useEffect(() => {
-                                setPageState("tasks");
-                            }, [])
-                        }
-                        <AddTaskCard />
+                        <AddTaskCard onTaskAdded={refreshTasks} />
                         {tasks.map((task, index) => (
                             <TaskCard key={task.id || index} task={task} />
                         ))}

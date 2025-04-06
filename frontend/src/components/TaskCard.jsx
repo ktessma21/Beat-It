@@ -1,22 +1,90 @@
+
 import React, { useState, useEffect } from 'react';
 import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
+
 
 function TaskCard({ task }) {
     // Use task prop or fallback to default values
     const taskId = task?.id || "123";
     const taskName = task?.task_name || "Example Task";
+    const goalTime = task?.goal_time || 60; // in minutes
+    
+    // Create a unique storage key that includes both task ID and name
+    const storageKey = useMemo(() => {
+        return `timer_${taskId}_${taskName.replace(/\s+/g, '_')}`;
+    }, [taskId, taskName]);
     
     // Set initial time (converting minutes to seconds if goal_time exists)
-    const initialTime = task?.goal_time ? task.goal_time * 60 : 60;
+    const initialTime = useMemo(() => {
+        if (task?.goal_time) {
+            return task.goal_time * 60;
+        }
+        return 60;
+    }, [task?.goal_time]);
     
-    // Use localStorage to persist timer state across tab navigation
-    const storageKey = `timer_${taskId}`;
-    const storedState = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    // Initialize state with localStorage values or defaults
+    const [time, setTime] = useState(() => {
+        try {
+            const storedItem = localStorage.getItem(storageKey);
+            if (storedItem) {
+                const storedState = JSON.parse(storedItem);
+                if (storedState.time !== undefined) {
+                    return storedState.time;
+                }
+            }
+        } catch (error) {
+            console.error("Error parsing stored timer state:", error);
+            localStorage.removeItem(storageKey);
+        }
+        return initialTime;
+    });
+
+    const [isRunning, setIsRunning] = useState(() => {
+        try {
+            const storedItem = localStorage.getItem(storageKey);
+            if (storedItem) {
+                const storedState = JSON.parse(storedItem);
+                return storedState.isRunning || false;
+            }
+        } catch (error) {
+            console.error("Error parsing stored timer state:", error);
+        }
+        return false;
+    });
+
+    const [lastUpdated, setLastUpdated] = useState(() => {
+        try {
+            const storedItem = localStorage.getItem(storageKey);
+            if (storedItem) {
+                const storedState = JSON.parse(storedItem);
+                return storedState.lastUpdated || Date.now();
+            }
+        } catch (error) {
+            console.error("Error parsing stored timer state:", error);
+        }
+        return Date.now();
+    });
+
+    // Calculate completion percentage and level
+    const completionPercentage = useMemo(() => {
+        const timeSpent = (initialTime - time) / 60; // Convert to minutes
+        return (timeSpent / goalTime) * 100;
+    }, [time, initialTime, goalTime]);
+
+    const level = useMemo(() => {
+        if (completionPercentage <= 33.33) return "Novice";
+        if (completionPercentage <= 66.66) return "Practitioner";
+        if (completionPercentage <= 100) return "Artist";
+        return "Master";
+    }, [completionPercentage]);
     
-    const [time, setTime] = useState(storedState.time !== undefined ? storedState.time : initialTime);
-    const [isRunning, setIsRunning] = useState(storedState.isRunning || false);
-    const [lastUpdated, setLastUpdated] = useState(storedState.lastUpdated || Date.now());
-    const [isPaused, setIsPaused] = useState(false);
+
+    // Generate a consistent player number based on the task ID
+    const playerNum = useMemo(() => {
+        const sum = taskId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return (sum % 6) + 1;
+    }, [taskId]);
+
     
     // Format time as MM:SS or HH:MM:SS
     const formatTime = () => {
@@ -29,11 +97,15 @@ function TaskCard({ task }) {
     
     // Save state to localStorage
     useEffect(() => {
-        localStorage.setItem(storageKey, JSON.stringify({
-            time,
-            isRunning,
-            lastUpdated: Date.now()
-        }));
+        try {
+            localStorage.setItem(storageKey, JSON.stringify({
+                time,
+                isRunning,
+                lastUpdated: Date.now()
+            }));
+        } catch (error) {
+            console.error("Error saving timer state:", error);
+        }
     }, [time, isRunning, storageKey]);
     
     // Check for time passage while away
@@ -43,11 +115,9 @@ function TaskCard({ task }) {
             const elapsedSeconds = Math.floor((now - lastUpdated) / 1000);
             
             if (elapsedSeconds > 0 && time > 0) {
-                // Calculate new time, don't go below 0
                 const newTime = Math.max(0, time - elapsedSeconds);
                 setTime(newTime);
                 
-                // If timer reached zero while away
                 if (newTime === 0) {
                     setIsRunning(false);
                 }
@@ -82,8 +152,9 @@ function TaskCard({ task }) {
     
     // Handle Start/Stop button click
     function handleClick() {
-        if (!isRunning && !isPaused) {
-            // If time is 0, reset to initial time before starting
+
+        if (!isRunning) {
+
             if (time === 0) {
                 setTime(initialTime);
             }
@@ -112,9 +183,7 @@ function TaskCard({ task }) {
         setIsPaused(false);
         setTime(initialTime);
     }
-
-    const playerNum = Math.floor(Math.random() * 6) + 1;
-   
+    
     return (
         <div className="flex justify-center">
             <div className="border-3 border-gray-600 w-96 h-72 bg-[#C6CDFDDE] relative rounded-2xl overflow-hidden">
@@ -125,7 +194,10 @@ function TaskCard({ task }) {
                 />
                 <div className="w-full h-28 absolute bottom-0 bg-[#b96244] z-0"></div>
                 <div className="absolute top-0 flex justify-between w-full py-3 px-6 text-[#894625] text-4xl">
-                    <p>{taskName}</p>
+                    <div>
+                        <p className="truncate max-w-48">{taskName}</p>
+                        <p className="text-sm mt-1 text-white">{level}</p>
+                    </div>
                     <p className={`${isRunning && time <= 60 ? 'animate-pulse' : ''}`}>{formatTime()}</p>
                 </div>
 

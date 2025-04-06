@@ -7,34 +7,60 @@ import AddTaskCard from "../components/AddTaskCard";
 function Habits() {
     const { pageState, setPageState } = useContext(PageContext);
     const [habits, setHabits] = useState([]);
-
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    
+    // Set the page state outside of JSX
     useEffect(() => {
-        const fetchHabits = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
+        setPageState("habits");
+    }, [setPageState]);
 
-                const res = await fetch("https://beatitbackend.onrender.com/habits", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    }
-                });
-
-                if (res.status === 404) {
-                    console.error("Habits not found");
-                    return;
-                }
-
-                const data = await res.json();
-                setHabits(data.habits); // Adjust this based on your backend response structure
-            } catch (error) {
-                console.error("Error fetching habits:", error);
+    // Fetch habits from the backend
+    const fetchHabits = async () => {
+        try {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                console.error("No authentication token found");
+                return;
             }
-        };
 
+            const res = await fetch("https://beatitbackend.onrender.com/habits", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch habits");
+            }
+
+            const data = await res.json();
+            if (data.habits) {
+                setHabits(data.habits);
+            }
+        } catch (error) {
+            console.error("Error fetching habits:", error);
+        }
+    };
+
+    // Initial fetch and setup refresh interval
+    useEffect(() => {
         fetchHabits();
-    }, []);
+        
+        // Set up an interval to periodically refresh the habits
+        const intervalId = setInterval(() => {
+            fetchHabits();
+        }, 5000); // Check for new habits every 5 seconds
+        
+        // Clean up interval on component unmount
+        return () => clearInterval(intervalId);
+    }, [refreshTrigger]);
+
+    // Function to trigger habit list refresh
+    const refreshHabits = () => {
+        setRefreshTrigger(prev => prev + 1);
+    };
 
     return (
         <div className="h-screen w-screen flex flex-col">
@@ -46,12 +72,7 @@ function Habits() {
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
                     <div className="flex gap-8 pb-8">
-                        {
-                            useEffect(() => {
-                                setPageState("habits");
-                            }, [])
-                        }
-                        <AddTaskCard />
+                        <AddTaskCard onTaskAdded={refreshHabits} />
                         {habits.map((habit, index) => (
                             <HabitCard key={habit.id || index} habit={habit} />
                         ))}
