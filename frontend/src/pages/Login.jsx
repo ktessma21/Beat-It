@@ -8,29 +8,39 @@ function Login(){
     const [password, setPassword] = useState('');
 
     return(
-        <div className="Login">
-            <h1>Login</h1>
-            <div>
-                <h2>Username:</h2>
-                <input
-                    type="text"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-            </div>
-            <div>
-                <h2>Password:</h2>
-                <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
-            <div>
-                <button>Sign Up</button>
-                <button>Login</button>
+        <div className="body">
+            <img
+                className="w-40 m-10"
+                src="/pictures/logo.png"
+                alt="Logo"
+            />
+            <div className="Login">
+                
+                <h1>Login</h1>
+                <div>
+                    <h2>Username:</h2>
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <h2>Password:</h2>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <button onClick={() => setPageState("habits")}>Sign Up</button>
+                    <button onClick={() => setPageState("habits")}>Login</button>
+                </div>
             </div>
         </div>
     )

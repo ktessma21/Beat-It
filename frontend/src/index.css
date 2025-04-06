@@ -51,6 +51,10 @@ button {
   background-color:#777DA3;
 }
 
+button:hover {
+  background-color: #9EA5D9;
+}
+
 input{
   display: flex;
   align-items: center;

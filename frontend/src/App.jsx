@@ -13,16 +13,9 @@ function App() {
   return (
     <div className="font-jersey">
       <PageContext.Provider value={{pageState, setPageState}}>
-        <div className="body">
-          <img
-            className="w-40 m-10"
-            src="/pictures/logo.png"
-            alt="Logo"
-          />
-          {pageState === "login" && <Login />}
-          {pageState === "tasks" && <Tasks />}
-          {pageState === "habits" && <Habits />}
-        </div>
+        {pageState === "login" && <Login />}
+        {pageState === "tasks" && <Tasks />}
+        {pageState === "habits" && <Habits />}
       </PageContext.Provider>
     </div>
   )
