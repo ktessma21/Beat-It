@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
 
 function HabitCard({ habit }) {
     // Use habit prop or fallback to default values
@@ -7,6 +8,7 @@ function HabitCard({ habit }) {
     const daysOfWeek = habit?.days_of_week || [];
     const goalTime = habit?.goal_time || 60; // in minutes
     const daysPerWeek = habit?.days_per_week || 3;
+    const [isPaused, setIsPaused] = useState(false);
     
     // Create a unique storage key that includes both habit ID and name
     const storageKey = useMemo(() => {
@@ -160,19 +162,33 @@ function HabitCard({ habit }) {
     
     // Handle Start/Stop button click
     function handleClick() {
-        if (!isRunning) {
+        if (!isRunning && !isPaused) {
             if (time === 0) {
                 setTime(initialTime);
             }
+    
+            // Start playback
+            loadMidiFile({ level: level.toLowerCase(), taskId: habitId });
+    
             setIsRunning(true);
-        } else {
+            setIsPaused(false); // Make sure isPaused is false when starting
+        } else if (isRunning && !isPaused) {
+            // Pause playback
+            pausePlayback({ taskId: habitId });
             setIsRunning(false);
+            setIsPaused(true); // Set paused to true
+        } else if (isPaused) {
+            // Resume playback
+            resumePlayback({ taskId: habitId });
+            setIsRunning(true);
+            setIsPaused(false); // Set paused to false
         }
     }
     
     // Reset timer to initial value
     function handleReset() {
         setIsRunning(false);
+        setIsPaused(false);
         setTime(initialTime);
     }
     
@@ -192,7 +208,7 @@ function HabitCard({ habit }) {
             <div className="border-3 border-gray-600 w-96 h-72 bg-[#F2D7D9] relative rounded-2xl overflow-hidden">
                 <img
                     className="w-56 relative top-20 left-6 z-10"
-                    src={`/pictures/player${playerNum}.gif`}
+                    src={`/pictures/player${playerNum}.${isRunning ? 'gif' : 'png'}`}
                     alt="piano boy/girl"
                 />
                 <div className="w-full h-28 absolute bottom-0 bg-[#D14D72] z-0"></div>

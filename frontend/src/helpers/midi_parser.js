@@ -1,7 +1,8 @@
 import * as MIDI from '@tonejs/midi';
 import * as Tone from "tone";
 
-let currentTransportPlaying = false;
+// Use a Map to track playback state for both tasks and habits
+const playbackStates = new Map();
 
 const midiFiles = {
     novice: [
@@ -32,58 +33,85 @@ const midiFiles = {
     ]
 };
 
-let isPaused = false;
-
 export async function loadMidiFile({ level, taskId }) {
-    
-    const files = midiFiles[level];
-    const randomIndex = Math.floor(Math.random() * files.length);
-    const fileName = files[randomIndex];
+    try {
+        const files = midiFiles[level];
+        if (!files || files.length === 0) {
+            console.error(`No MIDI files found for level: ${level}`);
+            return;
+        }
 
-    const response = await fetch(`/songs/${fileName}`);
-    const arrayBuffer = await response.arrayBuffer();
+        const randomIndex = Math.floor(Math.random() * files.length);
+        const fileName = files[randomIndex];
 
-    const midi = new MIDI.Midi(arrayBuffer);
-    console.log('MIDI name:', midi.name);
+        const response = await fetch(`/songs/${fileName}`);
+        const arrayBuffer = await response.arrayBuffer();
 
-    if (currentTransportPlaying[taskId]) {
-        Tone.Transport.stop();
-        Tone.Transport.cancel();
+        const midi = new MIDI.Midi(arrayBuffer);
+        console.log('MIDI name:', midi.name);
+
+        // Stop any existing playback for this task/habit
+        if (playbackStates.has(taskId)) {
+            const existingState = playbackStates.get(taskId);
+            if (existingState.transport) {
+                existingState.transport.stop();
+                existingState.transport.cancel();
+            }
+        }
+
+        // Create new playback state
+        const transport = Tone.Transport;
+        const synths = [];
+
+        midi.tracks.forEach((track) => {
+            console.log('Instrument:', track.instrument.name);
+            const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+            synths.push(synth);
+            
+            track.notes.forEach((note) => {
+                console.log(`Note ${note.name} at ${note.time}s for ${note.duration}s`);
+                transport.scheduleOnce((time) => {
+                    synth.triggerAttackRelease(note.name, note.duration, time, note.velocity);
+                }, note.time);
+            });
+        });
+
+        // Store the playback state
+        playbackStates.set(taskId, {
+            transport,
+            synths,
+            isPlaying: true
+        });
+
+        await Tone.start();
+        console.log('Audio context started');
+
+        // Set the BPM if available from the MIDI file
+        transport.bpm.value = midi.header.tempos[0]?.bpm || 120;
+
+        // Start playback
+        transport.start();
+    } catch (error) {
+        console.error('Error loading MIDI file:', error);
     }
-    
-
-    midi.tracks.forEach((track) => {
-        console.log('Instrument:', track.instrument.name);
-        const synth = new Tone.PolySynth(Tone.Synth).toDestination()
-        track.notes.forEach((note) => {
-            console.log(`Note ${note.name} at ${note.time}s for ${note.duration}s`);
-            Tone.Transport.scheduleOnce((time) => {
-                synth.triggerAttackRelease(note.name, note.duration, time, note.velocity)
-            }, note.time)
-
-        })
-
-    });
-    await Tone.start()
-    console.log('Audio context started')
-
-    
-
-    // Step 7: Set the BPM if available from the MIDI file
-    Tone.Transport.bpm.value = midi.header.tempos[0]?.bpm || 120
-
-    // Step 8: Start playback
-    Tone.Transport.start()
 }
 
-export function pausePlayback({taskId}) {
-    Tone.Transport.pause(); // Pauses the Tone.js Transport
-    console.log("Playback paused");
+export function pausePlayback({ taskId }) {
+    const state = playbackStates.get(taskId);
+    if (state && state.transport) {
+        state.transport.pause();
+        state.isPlaying = false;
+        console.log("Playback paused");
+    }
 }
 
-export function resumePlayback({taskId}) {
-    Tone.Transport.start(); // Resumes the Tone.js Transport
-    console.log("Playback resumed");
+export function resumePlayback({ taskId }) {
+    const state = playbackStates.get(taskId);
+    if (state && state.transport) {
+        state.transport.start();
+        state.isPlaying = true;
+        console.log("Playback resumed");
+    }
 }
 
 
