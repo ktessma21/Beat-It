@@ -1,8 +1,10 @@
 import {React, useContext} from "react";
 import {PageContext} from '../helpers/Contexts'
+
 import TaskCard from '../components/TaskCard'
 import NavBar from "../components/NavBar";
 import AddPopUp from "../components/AddPopUp";
+
 
 function Tasks(){
     const {pageState, setPageState} = useContext(PageContext);
@@ -23,6 +25,7 @@ function Tasks(){
                         <TaskCard />
                         <TaskCard />
                         <TaskCard />
+                        <AddTaskCard />
                     </div>
                 </div>
             </div>
