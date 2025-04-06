@@ -44,10 +44,14 @@ function Tasks() {
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
                     <div className="flex gap-8 pb-8">
+                    {useEffect(() => {
+                                setPageState("tasks");
+                            }, [])
+                        }
+                        <AddTaskCard />
                         {tasks.map((task, index) => (
                             <TaskCard key={task.id || index} task={task} />
                         ))}
-                        <AddTaskCard />
                     </div>
                 </div>
             </div>

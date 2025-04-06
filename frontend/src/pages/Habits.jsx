@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { PageContext } from '../helpers/Contexts';
-
-import TaskCard from '../components/taskCard'
+import HabitCard from '../components/HabitCard';
 import NavBar from "../components/NavBar";
 import AddTaskCard from "../components/AddTaskCard";
 
@@ -22,12 +21,13 @@ function Habits() {
                     }
                 });
 
-                if (!res.ok) {
-                    throw new Error("Failed to fetch habits");
+                if (res.status === 404) {
+                    console.error("Habits not found");
+                    return;
                 }
 
                 const data = await res.json();
-                setHabits(data.habits); // Adjust if your backend sends a different shape
+                setHabits(data.habits); // Adjust this based on your backend response structure
             } catch (error) {
                 console.error("Error fetching habits:", error);
             }
@@ -39,6 +39,23 @@ function Habits() {
     return (
         <div className="h-screen w-screen flex flex-col">
             <NavBar />
+            <div className="text-5xl px-8 pt-8">Habit Hub</div>
+            <div className="text-3xl px-8">Build healthy habits to improve your students!</div>
+            <div className="p-8 w-full">
+                <div className="overflow-x-auto">
+                    <div className="flex gap-8 pb-8">
+                        {
+                            useEffect(() => {
+                                setPageState("habits");
+                            }, [])
+                        }
+                        <AddTaskCard />
+                        {habits.map((habit, index) => (
+                            <HabitCard key={habit.id || index} habit={habit} />
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
