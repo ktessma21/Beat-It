@@ -1,40 +1,59 @@
 import React, { useState, useEffect } from 'react';
 
-function TaskCard({ taskId = "123" }) {
-    // Initial time: 25 minutes in seconds (1500 seconds)
-    const initialTime = 60;
-    const [time, setTime] = useState(initialTime);
-    const [isRunning, setIsRunning] = useState(false);
+function TaskCard({ task }) {
+    // Use task prop or fallback to default values
+    const taskId = task?.id || "123";
+    const taskName = task?.task_name || "Example Task";
     
-    // Fetch initial timer value from backend on component mount
-    useEffect(() => {
-        const fetchTimerData = async () => {
-            try {
-                const response = await fetch(`http://your-backend-url/api/tasks/${taskId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    // Assuming backend returns time in seconds
-                    if (data.timeInSeconds) {
-                        setTime(data.timeInSeconds);
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching timer data:", error);
-            }
-        };
-
-        // Uncomment when backend is ready
-        // fetchTimerData();
-    }, [taskId]);
+    // Set initial time (converting minutes to seconds if goal_time exists)
+    const initialTime = task?.goal_time ? task.goal_time * 60 : 60;
     
-    // Format time as HH:MM:SS
+    // Use localStorage to persist timer state across tab navigation
+    const storageKey = `timer_${taskId}`;
+    const storedState = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    
+    const [time, setTime] = useState(storedState.time !== undefined ? storedState.time : initialTime);
+    const [isRunning, setIsRunning] = useState(storedState.isRunning || false);
+    const [lastUpdated, setLastUpdated] = useState(storedState.lastUpdated || Date.now());
+    
+    // Format time as MM:SS or HH:MM:SS
     const formatTime = () => {
         const hours = Math.floor(time / 3600);
         const minutes = Math.floor((time % 3600) / 60);
         const seconds = time % 60;
         
-        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return `${hours > 0 ? hours + ':' : ''}${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
+    
+    // Save state to localStorage
+    useEffect(() => {
+        localStorage.setItem(storageKey, JSON.stringify({
+            time,
+            isRunning,
+            lastUpdated: Date.now()
+        }));
+    }, [time, isRunning, storageKey]);
+    
+    // Check for time passage while away
+    useEffect(() => {
+        if (isRunning && lastUpdated) {
+            const now = Date.now();
+            const elapsedSeconds = Math.floor((now - lastUpdated) / 1000);
+            
+            if (elapsedSeconds > 0 && time > 0) {
+                // Calculate new time, don't go below 0
+                const newTime = Math.max(0, time - elapsedSeconds);
+                setTime(newTime);
+                
+                // If timer reached zero while away
+                if (newTime === 0) {
+                    setIsRunning(false);
+                }
+            }
+        }
+        
+        setLastUpdated(Date.now());
+    }, []);
     
     // Timer effect - countdown
     useEffect(() => {
@@ -43,21 +62,20 @@ function TaskCard({ taskId = "123" }) {
         if (isRunning && time > 0) {
             interval = setInterval(() => {
                 setTime(prevTime => {
-                    if (prevTime <= 1) {
+                    const newTime = prevTime - 1;
+                    if (newTime <= 0) {
                         clearInterval(interval);
                         setIsRunning(false);
-                        // You could add a sound or notification here when timer completes
                         return 0;
                     }
-                    return prevTime - 1;
+                    return newTime;
                 });
+                setLastUpdated(Date.now());
             }, 1000);
-        } else if (time === 0) {
-            setIsRunning(false);
         }
         
         return () => clearInterval(interval);
-    }, [isRunning, time]);
+    }, [isRunning]);
     
     // Handle Start/Stop button click
     function handleClick() {
@@ -76,37 +94,10 @@ function TaskCard({ taskId = "123" }) {
     function handleReset() {
         setIsRunning(false);
         setTime(initialTime);
-        
-        // Optionally update backend when reset
-        updateTimerInBackend(initialTime);
-    }
-    
-    // Update timer in backend
-    async function updateTimerInBackend(timeInSeconds) {
-        try {
-
-            const token = localStorage.getItem("authToken");
-
-            const response = await fetch(`http://your-backend-url/api/tasks/${taskId}`, {
-                
-                method: 'PUT',
-                headers: {
-                    "Authorization": 'Bearer ${token}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ timeInSeconds }),
-            });
-            
-            if (!response.ok) {
-                console.error("Failed to update timer in backend");
-            }
-        } catch (error) {
-            console.error("Error updating timer:", error);
-        }
     }
     
     const playerNum = Math.floor(Math.random() * 6) + 1;
-
+    
     return (
         <div className="flex justify-center">
             <div className="border-3 border-gray-600 w-96 h-72 bg-[#C6CDFDDE] relative rounded-2xl overflow-hidden">
@@ -117,7 +108,7 @@ function TaskCard({ taskId = "123" }) {
                 />
                 <div className="w-full h-28 absolute bottom-0 bg-[#b96244] z-0"></div>
                 <div className="absolute top-0 flex justify-between w-full py-3 px-6 text-[#894625] text-4xl">
-                    <p>Example Task</p>
+                    <p>{taskName}</p>
                     <p className={`${isRunning && time <= 60 ? 'animate-pulse' : ''}`}>{formatTime()}</p>
                 </div>
 
