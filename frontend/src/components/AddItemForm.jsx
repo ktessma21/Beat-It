@@ -80,13 +80,11 @@ function AddItemForm() {
 
             setSuccess(data.message || `${isHabit ? 'Habit' : 'Task'} added successfully`);
 
-            // Delay popup close for feedback
+            // Delay popup close and reload for feedback
             setTimeout(() => {
                 setPopUpState(false);
-                // Set page state
-                if (isHabit) {
-                    fetchHabits();
-                }
+                // Reload the window for both tasks and habits
+                window.location.reload();
             }, 1000);
 
         } catch (error) {

@@ -1,21 +1,99 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 function HabitCard({ habit }) {
     // Use habit prop or fallback to default values
     const habitId = habit?.id || "123";
     const habitName = habit?.habit_name || "Example Habit";
     const daysOfWeek = habit?.days_of_week || [];
+    const goalTime = habit?.goal_time || 60; // in minutes
+    const daysPerWeek = habit?.days_per_week || 3;
+    
+    // Create a unique storage key that includes both habit ID and name
+    const storageKey = useMemo(() => {
+        return `habit_timer_${habitId}_${habitName.replace(/\s+/g, '_')}`;
+    }, [habitId, habitName]);
     
     // Set initial time (converting minutes to seconds if goal_time exists)
-    const initialTime = habit?.goal_time ? habit.goal_time * 60 : 60;
+    const initialTime = useMemo(() => {
+        if (habit?.goal_time) {
+            return habit.goal_time * 60;
+        }
+        return 60;
+    }, [habit?.goal_time]);
     
-    // Use localStorage to persist timer state across tab navigation
-    const storageKey = `habit_timer_${habitId}`;
-    const storedState = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    // Initialize state with localStorage values or defaults
+    const [time, setTime] = useState(() => {
+        try {
+            const storedItem = localStorage.getItem(storageKey);
+            if (storedItem) {
+                const storedState = JSON.parse(storedItem);
+                if (storedState.time !== undefined) {
+                    return storedState.time;
+                }
+            }
+        } catch (error) {
+            console.error("Error parsing stored timer state:", error);
+            localStorage.removeItem(storageKey);
+        }
+        return initialTime;
+    });
+
+    const [isRunning, setIsRunning] = useState(() => {
+        try {
+            const storedItem = localStorage.getItem(storageKey);
+            if (storedItem) {
+                const storedState = JSON.parse(storedItem);
+                return storedState.isRunning || false;
+            }
+        } catch (error) {
+            console.error("Error parsing stored timer state:", error);
+        }
+        return false;
+    });
+
+    const [lastUpdated, setLastUpdated] = useState(() => {
+        try {
+            const storedItem = localStorage.getItem(storageKey);
+            if (storedItem) {
+                const storedState = JSON.parse(storedItem);
+                return storedState.lastUpdated || Date.now();
+            }
+        } catch (error) {
+            console.error("Error parsing stored timer state:", error);
+        }
+        return Date.now();
+    });
+
+    // Calculate consistency score and level
+    const consistencyScore = useMemo(() => {
+        // Get current day of week (0-6, where 0 is Sunday)
+        const currentDay = new Date().getDay();
+        const isTodayScheduled = daysOfWeek.includes(currentDay);
+        
+        // Calculate days percentage
+        const daysCompleted = daysOfWeek.length;
+        const daysPercentage = (daysCompleted / daysPerWeek) * 100;
+        
+        // Calculate hours percentage
+        const timeSpent = (initialTime - time) / 60; // Convert to minutes
+        const hoursPercentage = (timeSpent / goalTime) * 100;
+        
+        // Calculate consistency score (60% days, 40% hours)
+        return (0.6 * daysPercentage) + (0.4 * hoursPercentage);
+    }, [time, initialTime, goalTime, daysOfWeek, daysPerWeek]);
+
+    const level = useMemo(() => {
+        if (consistencyScore <= 33.33) return "Novice";
+        if (consistencyScore <= 66.66) return "Practitioner";
+        if (consistencyScore <= 100) return "Artist";
+        return "Master";
+    }, [consistencyScore]);
     
-    const [time, setTime] = useState(storedState.time !== undefined ? storedState.time : initialTime);
-    const [isRunning, setIsRunning] = useState(storedState.isRunning || false);
-    const [lastUpdated, setLastUpdated] = useState(storedState.lastUpdated || Date.now());
+    // Generate a consistent player number based on the habit ID
+    const playerNum = useMemo(() => {
+        const sum = habitId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return (sum % 6) + 1;
+    }, [habitId]);
     
     // Format time as MM:SS or HH:MM:SS
     const formatTime = () => {
@@ -28,11 +106,15 @@ function HabitCard({ habit }) {
     
     // Save state to localStorage
     useEffect(() => {
-        localStorage.setItem(storageKey, JSON.stringify({
-            time,
-            isRunning,
-            lastUpdated: Date.now()
-        }));
+        try {
+            localStorage.setItem(storageKey, JSON.stringify({
+                time,
+                isRunning,
+                lastUpdated: Date.now()
+            }));
+        } catch (error) {
+            console.error("Error saving timer state:", error);
+        }
     }, [time, isRunning, storageKey]);
     
     // Check for time passage while away
@@ -42,11 +124,9 @@ function HabitCard({ habit }) {
             const elapsedSeconds = Math.floor((now - lastUpdated) / 1000);
             
             if (elapsedSeconds > 0 && time > 0) {
-                // Calculate new time, don't go below 0
                 const newTime = Math.max(0, time - elapsedSeconds);
                 setTime(newTime);
                 
-                // If timer reached zero while away
                 if (newTime === 0) {
                     setIsRunning(false);
                 }
@@ -81,7 +161,6 @@ function HabitCard({ habit }) {
     // Handle Start/Stop button click
     function handleClick() {
         if (!isRunning) {
-            // If time is 0, reset to initial time before starting
             if (time === 0) {
                 setTime(initialTime);
             }
@@ -108,8 +187,6 @@ function HabitCard({ habit }) {
             .join(', ');
     };
     
-    const playerNum = Math.floor(Math.random() * 6) + 1;
-    
     return (
         <div className="flex justify-center">
             <div className="border-3 border-gray-600 w-96 h-72 bg-[#F2D7D9] relative rounded-2xl overflow-hidden">
@@ -122,6 +199,7 @@ function HabitCard({ habit }) {
                 <div className="absolute top-0 flex justify-between w-full py-3 px-6 text-[#8F4F4F] text-4xl">
                     <div>
                         <p className="truncate max-w-48">{habitName}</p>
+                        <p className="text-sm mt-1 text-white">{level}</p>
                         <p className="text-sm mt-1">{formatDaysOfWeek()}</p>
                     </div>
                     <p className={`${isRunning && time <= 60 ? 'animate-pulse' : ''}`}>{formatTime()}</p>
