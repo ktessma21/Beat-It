@@ -39,8 +39,10 @@ function Tasks() {
     return (
         <div className="h-screen w-screen flex flex-col">
             <NavBar />
-            <div className="text-5xl px-8 pt-8">Task Hub</div>
-            <div className="text-3xl px-8">Practice healthy tasks to train your students!</div>
+            <div className="text-[#894625]">
+                <div className="text-5xl px-8 pt-8">Task Hub</div>
+                <div className="text-3xl px-8">Practice healthy tasks to train your students!</div>
+            </div>
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
                     <div className="flex gap-8 pb-8">
