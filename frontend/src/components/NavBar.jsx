@@ -20,13 +20,13 @@ function NavBar() {
                 href="#"
                 className="px-3 py-2 rounded-md a"
               >
-                Habits
+                &gt; Habits &lt;
               </a>
               <a
                 href="#"
                 className="hover:text-white px-3 py-2 rounded-md a"
               >
-                Tasks
+                &gt; Tasks &lt;
               </a>
             </div>
           </div>
