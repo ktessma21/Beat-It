@@ -25,6 +25,7 @@ function Tasks(){
                         <TaskCard />
                         <TaskCard />
                         <TaskCard />
+                        <AddTaskCard />
                     </div>
                 </div>
             </div>

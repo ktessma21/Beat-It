@@ -3,6 +3,7 @@ import {PageContext} from '../helpers/Contexts'
 import TaskCard from '../components/TaskCard'
 import NavBar from "../components/NavBar";
 import AddPopUp from "../components/AddPopUp";
+import AddTaskCard from "../components/AddTaskCard";
 
 function Habits(){
     const {pageState, setPageState} = useContext(PageContext);
@@ -23,6 +24,7 @@ function Habits(){
                         <TaskCard />
                         <TaskCard />
                         <TaskCard />
+                        <AddTaskCard />
                     </div>
                 </div>
             </div>
