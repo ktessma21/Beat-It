@@ -13,4 +13,4 @@ function AddTaskCard() {
     )
 }
 
-export default AddTaskCard
+export default AddTaskCard;
