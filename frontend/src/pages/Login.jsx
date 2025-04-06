@@ -38,8 +38,8 @@ function Login(){
                     />
                 </div>
                 <div>
-                    <button onClick={() => setPageState("habits")}>Sign Up</button>
-                    <button onClick={() => setPageState("habits")}>Login</button>
+                    <button className="login-button" onClick={() => setPageState("habits")}>Sign Up</button>
+                    <button className="login-button" onClick={() => setPageState("habits")}>Login</button>
                 </div>
             </div>
         </div>
