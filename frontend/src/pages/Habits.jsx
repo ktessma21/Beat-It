@@ -39,8 +39,10 @@ function Habits() {
     return (
         <div className="h-screen w-screen flex flex-col">
             <NavBar />
-            <div className="text-5xl px-8 pt-8">Habit Hub</div>
-            <div className="text-3xl px-8">Build healthy habits to improve your students!</div>
+            <div className="text-[#894625]">
+                <div className="text-5xl px-8 pt-8">Habit Hub</div>
+                <div className="text-3xl px-8">Build healthy habits to improve your students!</div>
+            </div>
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
                     <div className="flex gap-8 pb-8">
