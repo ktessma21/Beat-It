@@ -69,11 +69,6 @@ input{
 
 a {
   font-size: 34px;
-  color: #894625;
-}
-
-a:click {
-  color: #F6C5A9;
 }
 
 a:hover {
