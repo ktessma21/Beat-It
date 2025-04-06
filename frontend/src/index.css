@@ -83,3 +83,20 @@ a:hover {
 nav {
   background-color: #9EA5D9;
 }
+
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: #00000000;
+  
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #2c3036;
+  border-radius: 1px;
+  background: #DBBCAA;
+
+}
