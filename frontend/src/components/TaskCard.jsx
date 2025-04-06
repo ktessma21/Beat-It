@@ -95,15 +95,15 @@ function TaskCard({ task }) {
         setIsRunning(false);
         setTime(initialTime);
     }
-    
+
     const playerNum = Math.floor(Math.random() * 6) + 1;
-    
+   
     return (
         <div className="flex justify-center">
             <div className="border-3 border-gray-600 w-96 h-72 bg-[#C6CDFDDE] relative rounded-2xl overflow-hidden">
                 <img
                     className="w-56 relative top-20 left-6 z-10"
-                    src={`/pictures/player${playerNum}.gif`}
+                    src={`/pictures/player${playerNum}.${isRunning ? 'gif' : 'png'}`}
                     alt="piano boy/girl"
                 />
                 <div className="w-full h-28 absolute bottom-0 bg-[#b96244] z-0"></div>
