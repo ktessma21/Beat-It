@@ -1,9 +1,8 @@
 import {React, useContext, useState} from "react";
 import {PageContext} from '../helpers/Contexts'
-import "../index.css"
 
 function AddPopUp(){
-    const {pageState, setPageState} = useContext(PageContext);
+    const {pageState, setPageState, popUpState, setPopUpState} = useContext(PageContext);
     const [name, setName] = useState('');
     const [hrs, setHrs] = useState('');
     const [mins, setMins] = useState('');
@@ -14,7 +13,10 @@ function AddPopUp(){
     return(
         <div className="body">
             <div className="AddPopUp">
-                <h1>Add New {habitOrTask}</h1>
+                <div className="add-fields">
+                    <h1>Add New {habitOrTask}</h1>
+                    <button className="close-button" onClick={() => setPopUpState(false)}>x</button>
+                </div>
                 <div className="add-fields">
                     <h2>{habitOrTask} Name:</h2>
                     <input
@@ -72,7 +74,7 @@ function AddPopUp(){
                     />
                 </div>
                 <div>
-                    <button className="pop-button" onClick={() => setPageState({pageState})}>Create {habitOrTask}!</button>
+                    <button className="pop-button" onClick={() => setPopUpState(false)}>Create {habitOrTask}!</button>
                 </div>
             </div>
         </div>

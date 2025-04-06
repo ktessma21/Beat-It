@@ -33,11 +33,17 @@
   width: 700px;
   height: 600px;
   background-color: #EBEDFF;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items:flex-start;
+  align-items: space-between;
   padding-left: 50px;
+  padding-right: 50px;
+  z-index: 1000;
 }
 
 h1 {
@@ -50,7 +56,7 @@ h1 {
 h2 {
   font-size: 48px;
   color: #9EA5D9;
-  margin-right: 10px;
+  margin-right: 3px;
 }
 
 .login-button {
@@ -80,10 +86,26 @@ h2 {
   background-color:#777DA3;
 }
 
+.add-button {
+  font-size: 100px;
+  color: #777DA3;
+  line-height: 0.9;
+}
+
+.close-button {
+  font-size: 50px;
+  color: #777DA3;
+}
+
+.add-button:hover,
+.close-button:hover {
+  color: #9EA5D9;
+}
+
 input {
   display: flex;
   align-items: center;
-  width: 400px;
+  width: 380px;
   height: 50px;
   background-color: #777da333;
   border-radius: 10px;
@@ -98,6 +120,7 @@ input {
   justify-content: space-between;
   align-items: center;
 }
+
 .number-input {
   width: 90px;
   margin-right: 2px;

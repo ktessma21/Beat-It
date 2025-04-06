@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
-import { PageContext } from "../helpers/Contexts";
-import "../index.css";
+import {PageContext} from '../helpers/Contexts'
+
 import { loginUser } from "./loginscript.js";
 
 function Login() {
@@ -15,7 +15,6 @@ function Login() {
             setPageState("habits");
         }
     };
-    
 
     return (
         <div className="body">
