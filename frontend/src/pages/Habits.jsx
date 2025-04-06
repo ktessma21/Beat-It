@@ -9,7 +9,6 @@ function Habits(){
     return(
         <div>
             <NavBar />
-            <h1>Habits</h1>
             <AddPopUp />
             <TaskCard />
         </div>
