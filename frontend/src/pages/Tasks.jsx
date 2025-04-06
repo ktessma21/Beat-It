@@ -1,12 +1,49 @@
-import {React, useContext} from "react";
-import {PageContext} from '../helpers/Contexts'
-import TaskCard from '../components/TaskCard'
+import React, { useContext, useEffect, useState } from "react";
+import { PageContext } from '../helpers/Contexts';
+import TaskCard from '../components/TaskCard';
 import NavBar from "../components/NavBar";
 import AddPopUp from "../components/AddPopUp";
 
-function Tasks(){
-    const {pageState, setPageState} = useContext(PageContext);
-    return(
+// ✅ Moved getTasks inside this file (you can also import it if reused elsewhere)
+async function getTasks() {
+    const token = localStorage.getItem("authToken");
+
+    try {
+        const res = await fetch("https://beatitbackend.onrender.com/tasks", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            }
+        });
+
+        const data = await res.json();
+
+        if (data.message && data.message.includes("No habits found")) {
+            return [];
+        } else {
+            return data.habits || [];
+        }
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
+        return [];
+    }
+}
+
+function Tasks() {
+    const { pageState, setPageState } = useContext(PageContext);
+    const [tasks, setTasks] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const fetchedTasks = await getTasks();
+            setTasks(fetchedTasks);
+        }
+
+        fetchData();
+    }, []);
+
+    return (
         <div className="h-screen w-screen flex flex-col">
             <NavBar />
             <AddPopUp />
@@ -15,19 +52,14 @@ function Tasks(){
             <div className="p-8 w-full">
                 <div className="overflow-x-auto">
                     <div className="flex gap-8 pb-8">
-                        <TaskCard />
-                        <TaskCard />
-                        <TaskCard />
-                        <TaskCard />
-                        <TaskCard />
-                        <TaskCard />
-                        <TaskCard />
-                        <TaskCard />
+                        
+                            <p className="text-xl text-gray-500">No tasks found.</p>
+                        
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default Tasks
+export default Tasks;
