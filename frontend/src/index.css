@@ -9,19 +9,77 @@
   background-color: #9EA5D9;
 }
 
-.a {
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.Login {
+  border-radius: 7px;
+  width: 500px;
+  height: 600px;
+  background-color: #EBEDFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+h1 {
+  font-size: 60px;
+  color: #777DA3;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-size: 48px;
+  color: #9EA5D9;
+}
+
+button {
+  margin-top: 70px;
+  margin-left: 30px;
+  margin-right: 30px;
+  width: 150px;
+  border-radius: 10px;
+  font-size: 48px;
+  color: #DBBCAA;
+  background-color:#777DA3;
+}
+
+button:hover {
+  background-color: #9EA5D9;
+}
+
+input{
+  display: flex;
+  align-items: center;
+  width: 400px;
+  height: 50px;
+  background-color: #777da333;
+  border-radius: 10px;
+  font-size: 30px;
+  color: #777DA3;
+  padding: 15px;
+}
+
+a {
   font-size: 34px;
   color: #894625;
 }
 
-.a:selected {
+a:click {
   color: #F6C5A9;
 }
 
-.a:hover {
+a:hover {
   color: #F6C5A9;
 }
 
-.nav {
+nav {
   background-color: #9EA5D9;
 }
