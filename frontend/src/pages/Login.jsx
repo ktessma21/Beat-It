@@ -1,13 +1,23 @@
-import {React, useContext, useState} from "react";
-import {PageContext} from '../helpers/Contexts'
-import "../index.css"
+import React, { useContext, useState } from "react";
+import { PageContext } from "../helpers/Contexts";
+import "../index.css";
+import { loginUser } from "./loginscript.js";
 
-function Login(){
-    const {pageState, setPageState} = useContext(PageContext);
+function Login() {
+    const { setPageState } = useContext(PageContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    return(
+    const handleAuth = async (type) => {
+        const token = await loginUser(username, password, type);
+        if (token) {
+            localStorage.setItem("authToken", token);  // persistent
+            setPageState("habits");
+        }
+    };
+    
+
+    return (
         <div className="body">
             <img
                 className="w-40 m-10"
@@ -15,7 +25,6 @@ function Login(){
                 alt="Logo"
             />
             <div className="Login">
-                
                 <h1>Login</h1>
                 <div>
                     <h2>Username:</h2>
@@ -38,12 +47,16 @@ function Login(){
                     />
                 </div>
                 <div>
-                    <button className="login-button" onClick={() => setPageState("habits")}>Sign Up</button>
-                    <button className="login-button" onClick={() => setPageState("habits")}>Login</button>
+                    <button className="login-button" onClick={() => handleAuth("signup")}>
+                        Sign Up
+                    </button>
+                    <button className="login-button" onClick={() => handleAuth("login")}>
+                        Login
+                    </button>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default Login
+export default Login;
