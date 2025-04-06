@@ -22,7 +22,7 @@ function Login(){
             <div>
                 <h2>Password:</h2>
                 <input
-                    type="text"
+                    type="password"
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
