@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
 
 function TaskCard({ taskId = "123" }) {
     // Initial time: 25 minutes in seconds (1500 seconds)
     const initialTime = 60;
     const [time, setTime] = useState(initialTime);
     const [isRunning, setIsRunning] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+
+
     
     // Fetch initial timer value from backend on component mount
     useEffect(() => {
@@ -55,26 +59,41 @@ function TaskCard({ taskId = "123" }) {
         } else if (time === 0) {
             setIsRunning(false);
         }
+
         
         return () => clearInterval(interval);
     }, [isRunning, time]);
     
     // Handle Start/Stop button click
     function handleClick() {
-        if (!isRunning) {
+        if (!isRunning && !isPaused) {
             // If time is 0, reset to initial time before starting
             if (time === 0) {
                 setTime(initialTime);
             }
+    
+            // Start playback
+            loadMidiFile({ level: 'novice', taskId });
+    
             setIsRunning(true);
-        } else {
+            setIsPaused(false); // Make sure isPaused is false when starting
+        } else if (isRunning && !isPaused) {
+            // Pause playback
+            pausePlayback(taskId);
             setIsRunning(false);
+            setIsPaused(true); // Set paused to true
+        } else if (isPaused) {
+            // Resume playback
+            resumePlayback(taskId);
+            setIsRunning(true);
+            setIsPaused(false); // Set paused to false
         }
     }
     
     // Reset timer to initial value
     function handleReset() {
         setIsRunning(false);
+        setIsPaused(false);
         setTime(initialTime);
         
         // Optionally update backend when reset
@@ -133,6 +152,7 @@ function TaskCard({ taskId = "123" }) {
                     >
                         {isRunning ? 'Stop!' : 'Start!'}
                     </button>
+
                 </div>
             </div>
         </div>
