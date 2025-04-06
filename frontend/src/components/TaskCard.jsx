@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
 
@@ -153,26 +152,24 @@ function TaskCard({ task }) {
     
     // Handle Start/Stop button click
     function handleClick() {
-
         if (!isRunning && !isPaused) {
-
             if (time === 0) {
                 setTime(initialTime);
             }
     
-            // Start playback
-            loadMidiFile({ level: {level}, taskId });
+            // Start playback - fix the level parameter
+            loadMidiFile({ level: level.toLowerCase(), taskId });
     
             setIsRunning(true);
             setIsPaused(false); // Make sure isPaused is false when starting
         } else if (isRunning && !isPaused) {
             // Pause playback
-            pausePlayback(taskId);
+            pausePlayback({ taskId });
             setIsRunning(false);
             setIsPaused(true); // Set paused to true
         } else if (isPaused) {
             // Resume playback
-            resumePlayback(taskId);
+            resumePlayback({ taskId });
             setIsRunning(true);
             setIsPaused(false); // Set paused to false
         }
