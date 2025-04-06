@@ -1,6 +1,5 @@
 import './App.css'
 import {React, useState} from 'react'
-import NavBar from './components/NavBar'
 import Login from './pages/Login'
 import Tasks from './pages/Tasks'
 import Habits from './pages/Habits'

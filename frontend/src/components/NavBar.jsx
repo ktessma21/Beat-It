@@ -21,14 +21,14 @@ function NavBar() {
             {/* Navigation Links */}
             <div className="ml-10 flex items-baseline space-x-4">
               <a
-                className="px-3 py-2 rounded-md"
                 onClick={() => setPageState("habits")}
+                className={`px-3 py-2 rounded-md ${pageState === "habits" ? "text-[#F6C5A9]" : "text-[#894625]"}`}
               >
                 &gt; Habits &lt;
               </a>
               <a
-                className="hover:text-white px-3 py-2 rounded-md"
                 onClick={() => setPageState("tasks")}
+                className={`px-3 py-2 rounded-md ${pageState === "tasks" ? "text-[#F6C5A9]" : "text-[#894625]"}`}
               >
                 &gt; Tasks &lt;
               </a>
