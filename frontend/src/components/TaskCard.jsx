@@ -1,4 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
+
 
 function TaskCard({ task }) {
     // Use task prop or fallback to default values
@@ -75,11 +78,13 @@ function TaskCard({ task }) {
         return "Master";
     }, [completionPercentage]);
     
+
     // Generate a consistent player number based on the task ID
     const playerNum = useMemo(() => {
         const sum = taskId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return (sum % 6) + 1;
     }, [taskId]);
+
     
     // Format time as MM:SS or HH:MM:SS
     const formatTime = () => {
@@ -140,25 +145,42 @@ function TaskCard({ task }) {
                 setLastUpdated(Date.now());
             }, 1000);
         }
+
         
         return () => clearInterval(interval);
     }, [isRunning]);
     
     // Handle Start/Stop button click
     function handleClick() {
+
         if (!isRunning) {
+
             if (time === 0) {
                 setTime(initialTime);
             }
+    
+            // Start playback
+            loadMidiFile({ level: 'novice', taskId });
+    
             setIsRunning(true);
-        } else {
+            setIsPaused(false); // Make sure isPaused is false when starting
+        } else if (isRunning && !isPaused) {
+            // Pause playback
+            pausePlayback(taskId);
             setIsRunning(false);
+            setIsPaused(true); // Set paused to true
+        } else if (isPaused) {
+            // Resume playback
+            resumePlayback(taskId);
+            setIsRunning(true);
+            setIsPaused(false); // Set paused to false
         }
     }
     
     // Reset timer to initial value
     function handleReset() {
         setIsRunning(false);
+        setIsPaused(false);
         setTime(initialTime);
     }
     
@@ -193,6 +215,7 @@ function TaskCard({ task }) {
                     >
                         {isRunning ? 'Stop!' : 'Start!'}
                     </button>
+
                 </div>
             </div>
         </div>
