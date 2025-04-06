@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { loadMidiFile, pausePlayback, resumePlayback } from '../helpers/midi_parser';
 
 function TaskCard({ task }) {
     // Use task prop or fallback to default values
@@ -15,6 +16,7 @@ function TaskCard({ task }) {
     const [time, setTime] = useState(storedState.time !== undefined ? storedState.time : initialTime);
     const [isRunning, setIsRunning] = useState(storedState.isRunning || false);
     const [lastUpdated, setLastUpdated] = useState(storedState.lastUpdated || Date.now());
+    const [isPaused, setIsPaused] = useState(false);
     
     // Format time as MM:SS or HH:MM:SS
     const formatTime = () => {
@@ -73,26 +75,41 @@ function TaskCard({ task }) {
                 setLastUpdated(Date.now());
             }, 1000);
         }
+
         
         return () => clearInterval(interval);
     }, [isRunning]);
     
     // Handle Start/Stop button click
     function handleClick() {
-        if (!isRunning) {
+        if (!isRunning && !isPaused) {
             // If time is 0, reset to initial time before starting
             if (time === 0) {
                 setTime(initialTime);
             }
+    
+            // Start playback
+            loadMidiFile({ level: 'novice', taskId });
+    
             setIsRunning(true);
-        } else {
+            setIsPaused(false); // Make sure isPaused is false when starting
+        } else if (isRunning && !isPaused) {
+            // Pause playback
+            pausePlayback(taskId);
             setIsRunning(false);
+            setIsPaused(true); // Set paused to true
+        } else if (isPaused) {
+            // Resume playback
+            resumePlayback(taskId);
+            setIsRunning(true);
+            setIsPaused(false); // Set paused to false
         }
     }
     
     // Reset timer to initial value
     function handleReset() {
         setIsRunning(false);
+        setIsPaused(false);
         setTime(initialTime);
     }
 
@@ -126,6 +143,7 @@ function TaskCard({ task }) {
                     >
                         {isRunning ? 'Stop!' : 'Start!'}
                     </button>
+
                 </div>
             </div>
         </div>
